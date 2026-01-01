@@ -1,9 +1,10 @@
-# snake-os
+<div align="center"><img width="741" height="427" alt="image" src="https://github.com/user-attachments/assets/f77c47db-b4fa-403f-904f-003a50e8e9a5" /></div>
 
-snake-os is an x86 operating system that runs a standalone version of the classic **Snake** game directly on bare metal in [protected mode](https://en.wikipedia.org/wiki/Protected_mode).  
+# Snake OS
+
+The Snake Game, but as an standalone x86 operating system working in [protected mode](https://en.wikipedia.org/wiki/Protected_mode).
+
 The project is focused on low-level development and demonstrates how to build an OS from scratch: from bootloading and memory initialization to VGA rendering and handling keyboard input without relying on any underlying operating system.
-
----
 
 ## Features
 
@@ -14,43 +15,39 @@ The project is focused on low-level development and demonstrates how to build an
 - extremely small memory footprint
 - includes a fully playable Snake game as the core OS task
 
----
-
 ## System requirements
 
 - Any [x86](https://en.wikipedia.org/wiki/X86) or [x86_64](https://en.wikipedia.org/wiki/X86-64) CPU
 - GPU with **VGA text mode** support
 - at least **1 KB RAM**
-- legacy boot mode (**UEFI boot not supported yet**)
+- firmware supporting legacy boot
 
----
+## Getting started
 
-## Building
+First let's:
 
-There are two ways to build *snake-os*:
+- **Download the ISO**: `go to GitHub Releases and download the latest ISO`
 
-1. **Development build (fast)**  
-   Use the `Makefile` for quick builds during development. This generates the `.elf` kernel file without creating a full ISO:
+*or*
 
-   ```sh
-   make
-   ```
+- **Compile the OS**: `clone the repo and run ./build.sh (Makefile is theoritically faster and better for development, but ./build.sh takes care of dependencies and builds the ISO, whereas Makefile does not do this)`
 
-2. **Production build (ISO)**
-   Use the `build.sh` script to create a bootable ISO image suitable for running on real hardware or emulators:
+Then run the OS with this command: `qemu-system-x86_64 -cdrom snake-os.iso`.
 
-   ```sh
-   ./build.sh
-   ```
+> [!TIP]
+> If you have a Windows machine, [download a normal operating system](https://endof10.org) or try to get it working for over 6 hours.
 
-The `build.sh` script also installs any required dependencies automatically on most major Linux distributions.
+> [!TIP]
+> If your machine supports virtualization, you can append the `-enable-kvm` flag to make it faster, but SnakeOS is such a simple OS that it won't really change anything.
 
-You can download the prebuilt ISO from the
-[GitHub Releases page](https://github.com/Maqi-x/snake-os/releases).
+## Credits
 
----
+The creator would like to thank the following for helping to make this OS:
+
+- [All people contributing to this project](https://github.com/Maqi-x/snake-os/graphs/contributors)
+- [OS-Dev Wiki](https://wiki.osdev.org) for helping with creating this OS
+- [AurorOS](https://github.com/Interpuce/AurorOS) for a build script (`dep_install.sh` and `build.sh`)
 
 ## License
 
 snake-os is licensed under the [GNU General Public License v3](/LICENSE).
-
