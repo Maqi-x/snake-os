@@ -1,4 +1,5 @@
-<div align="center"><img width="741" height="427" alt="image" src="https://github.com/user-attachments/assets/f77c47db-b4fa-403f-904f-003a50e8e9a5" /></div>
+<div align="center"><img width="746" height="428" alt="image" src="https://github.com/user-attachments/assets/4cd6e4b8-ae38-4083-949c-843e5d689122" /></div>
+
 
 # Snake OS
 
