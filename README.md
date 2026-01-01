@@ -4,5 +4,5 @@
 
 The Snake Game. Now rewritted to run without OS... I mean without bloat.
 
-**Downloading**: `go to GitHub Releases and download the latest ISO`
-**Compiling**: `clone the repo and run ./build.sh`
+- **Downloading**: `go to GitHub Releases and download the latest ISO`
+- **Compiling**: `clone the repo and run ./build.sh`
