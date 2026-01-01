@@ -41,11 +41,14 @@ typedef struct food {
     byte color;
 } food_t;
 
+
 typedef struct gamedata {
     word attempt;
     word maxscore;
+    dword max_playtime;
     word score;
     dword start_time;
+    byte is_new_game;
 } gamedata_t;
 
 static snake_t snake;
@@ -114,14 +117,13 @@ void addfood() {
     } while (isoccupied(food.x, food.y));
 }
 
-void redraw_ui_if_needed() {
+void redraw_ui_if_needed(byte need_full_redraw) {
     const byte BORDER_COLOR = VGA_COLOR(WHITE, BLACK);
     const byte UI_TEXT_COLOR = VGA_COLOR(WHITE, BLACK);
 
     const byte BORDER_CHAR = 0xDB;
 
-    static byte is_first_frame = 1;
-    if (is_first_frame) {
+    if (need_full_redraw) {
         fillscreen(' ', VGA_COLOR(0, BLACK));
 
         fillcol(BOARD_X-1, BORDER_CHAR, BORDER_COLOR);
@@ -136,14 +138,20 @@ void redraw_ui_if_needed() {
 
     byte ui_y = UI_AREA_Y + 1;
     
-    print_ui_stat(UI_AREA_X + 1, ui_y++, "Attempt:", gamedata.attempt, prev_gamedata.attempt, UI_TEXT_COLOR, is_first_frame);
-    print_ui_stat(UI_AREA_X + 1, ui_y++, "Max Score:", gamedata.maxscore, prev_gamedata.maxscore, UI_TEXT_COLOR, is_first_frame);
+    print_ui_stat(UI_AREA_X + 1, ui_y++, "Attempt:", gamedata.attempt, prev_gamedata.attempt, UI_TEXT_COLOR, need_full_redraw);
+    print_ui_stat(UI_AREA_X + 1, ui_y++, "Max Score:", gamedata.maxscore, prev_gamedata.maxscore, UI_TEXT_COLOR, need_full_redraw);
+    print_ui_time_stat(UI_AREA_X + 1, ui_y++, "Play Time:", gamedata.max_playtime, UI_TEXT_COLOR, need_full_redraw);
     ui_y++;
-    print_ui_stat(UI_AREA_X + 1, ui_y++, "Score:", gamedata.score, prev_gamedata.score, UI_TEXT_COLOR, is_first_frame);
-    print_ui_time_stat(UI_AREA_X + 1, ui_y++, "Play Time:", uptime_ms() - gamedata.start_time, UI_TEXT_COLOR, is_first_frame);
+    print_ui_stat(UI_AREA_X + 1, ui_y++, "Score:", gamedata.score, prev_gamedata.score, UI_TEXT_COLOR, need_full_redraw);
+    print_ui_time_stat(UI_AREA_X + 1, ui_y++, "Play Time:", uptime_ms() - gamedata.start_time, UI_TEXT_COLOR, need_full_redraw);
 
-    prev_gamedata = gamedata;
-    is_first_frame = 0;
+    // I dont know why but this code causes a bootloop WHEN the size of the gamedata struct is greater than or equal to 16 bytes:
+    //prev_gamedata = gamedata;
+
+    // fix (ugly but works)
+    for (word i = 0; i < sizeof(gamedata); ++i) {
+        ((byte*) &prev_gamedata)[i] = ((byte*) &gamedata)[i];
+    }
 }
 
 static direction_t opposite[] = {
@@ -173,10 +181,27 @@ void handleinput() {
     }
 }
 
-// TODO
+void init_new_game() {
+    gamedata.score = 0;
+    gamedata.start_time = uptime_ms();
+
+    snake.dir = UP;
+    snake.length = 1;
+    snake.body[0].x = BOARD_WIDTH / 2;
+    snake.body[0].y = (BOARD_HEIGHT-1) / 2;
+
+    addfood();
+    gamedata.attempt++;
+    gamedata.is_new_game = 1;
+}
+
 void gameover() {
-    printstr(0, 0, "Game over", VGA_COLOR(WHITE, BLACK));
-    *(volatile byte*)0 = 0;                  // 🥀🥀🥀
+    const byte COLOR = VGA_COLOR(WHITE, RED);
+    fillscreen(' ', COLOR);
+
+    sleep(5000);
+
+    init_new_game();
 }
 
 void update() {
@@ -189,9 +214,8 @@ void update() {
 
     for (word i = snake.length - 1; i > 0; i--) {
         snake.body[i] = snake.body[i - 1];
+        handleinput();
     }
-
-    handleinput();
 
     prev_snake_dir = snake.dir;
     switch (snake.dir) {
@@ -211,6 +235,7 @@ void update() {
     for (word i = 1; i < snake.length; ++i) {
         if (head.x == snake.body[i].x && head.y == snake.body[i].y) {
             gameover();
+            handleinput();
         }
     } 
 
@@ -233,19 +258,28 @@ void update() {
 
 delay:
     handleinput();
-    for (int i = 0; i < 25; ++i) {
+    for (int i = 0; i < 50; ++i) {
         handleinput();
-        redraw_ui_if_needed();
-        sleep(10);
+        redraw_ui_if_needed(gamedata.is_new_game);
+        gamedata.is_new_game = 0;
+        sleep(5);
+
+        dword playtime = uptime_ms() - gamedata.start_time;
+        if (playtime > gamedata.max_playtime) {
+            gamedata.max_playtime = playtime;
+        }
     }
+
+    if (gamedata.score > gamedata.maxscore) {
+        gamedata.maxscore = gamedata.score;
+    }
+
 }
 
 void start_snake() {
-    snake.dir = UP;
-    snake.length = 1;
-    snake.body[0].x = BOARD_WIDTH / 2;
-    snake.body[0].y = (BOARD_HEIGHT-1) / 2;
-    addfood();
-    gamedata.start_time = uptime_ms();
+    for (word i = 0; i < sizeof(gamedata); ++i) {
+        ((byte*) &gamedata)[i] = 0;
+    }
+    init_new_game();
     while (1) update();
 }
