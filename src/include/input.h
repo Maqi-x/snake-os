@@ -17,6 +17,13 @@ enum {
     KEYCODE_A     = 0x1E,
     KEYCODE_S     = 0x1F,
     KEYCODE_D     = 0x20,
+
+    // according to stanislavs.org/helppc/make_codes.html
+
+    KEYCODE_ARROW_UP = 0x48,
+    KEYCODE_ARROW_DOWN = 0x50,
+    KEYCODE_ARROW_LEFT = 0x4B,
+    KEYCODE_ARROW_RIGHT = 0x4D,
 };
 
 static inline byte released(byte scancode) {

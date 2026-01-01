@@ -169,9 +169,13 @@ void handleinput() {
         direction_t newdir;
         switch (keycode) {
         case KEYCODE_W: newdir = UP;    break;
+        case KEYCODE_ARROW_UP: newdir = UP;    break;
         case KEYCODE_S: newdir = DOWN;  break;
+        case KEYCODE_ARROW_DOWN: newdir = DOWN;  break;
         case KEYCODE_A: newdir = LEFT;  break;
+        case KEYCODE_ARROW_LEFT: newdir = LEFT;  break;
         case KEYCODE_D: newdir = RIGHT; break;
+        case KEYCODE_ARROW_RIGHT: newdir = RIGHT; break;
         default: return;
         }
         
