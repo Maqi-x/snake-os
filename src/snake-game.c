@@ -8,7 +8,7 @@
 
 #define BOARD_X 1
 #define BOARD_Y 1
-#define BOARD_WIDTH 55
+#define BOARD_WIDTH 54
 #define BOARD_HEIGHT (SCREEN_HEIGHT - 2)
 
 #define UI_AREA_X 56
@@ -40,7 +40,6 @@ typedef struct food {
     byte y;
     byte color;
 } food_t;
-
 
 typedef struct gamedata {
     word attempt;
@@ -230,8 +229,8 @@ void update() {
     }
 
     snake_element_t head = snake.body[0];
-    if (head.x < BOARD_X || head.x > BOARD_X + BOARD_WIDTH
-     || head.y < BOARD_Y || head.y > BOARD_Y + BOARD_HEIGHT)
+    if (head.x < BOARD_X || head.x >= BOARD_X + BOARD_WIDTH
+     || head.y < BOARD_Y || head.y >= BOARD_Y + BOARD_HEIGHT)
     {
         gameover();
     }
