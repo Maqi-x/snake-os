@@ -23,23 +23,29 @@ The project is focused on low-level development and demonstrates how to build an
 - at least **1 KB RAM**
 - firmware supporting legacy boot
 
-## Getting started
+## Building
 
-First let's:
+There are two ways to build *snake-os*:
 
-- **Download the ISO**: `go to GitHub Releases and download the latest ISO`
+1. **Development build (fast)**  
+   Use the `Makefile` for quick builds during development. This generates the `.elf` kernel file without creating a full ISO:
 
-*or*
+   ```sh
+   make
+   ```
 
-- **Compile the OS**: `clone the repo and run ./build.sh (Makefile is theoritically faster and better for development, but ./build.sh takes care of dependencies and builds the ISO, whereas Makefile does not do this)`
+2. **Production build (ISO)**
+   Use the `build.sh` script to create a bootable ISO image suitable for running on real hardware or emulators:
 
-Then run the OS with this command: `qemu-system-x86_64 -cdrom snake-os.iso`.
+   ```sh
+   ./build.sh
+   ```
 
-> [!TIP]
-> If you have a Windows machine, [download a normal operating system](https://endof10.org) or try to get it working for over 6 hours.
+The `build.sh` script also installs any required dependencies automatically on most major Linux distributions.
 
-> [!TIP]
-> If your machine supports virtualization, you can append the `-enable-kvm` flag to make it faster, but SnakeOS is such a simple OS that it won't really change anything.
+You can download the prebuilt ISO from the
+[GitHub Releases page](https://github.com/Maqi-x/snake-os/releases).
+
 
 ## Credits
 
