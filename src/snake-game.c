@@ -54,7 +54,7 @@ static food_t food;
 static gamedata_t gamedata;
 static gamedata_t prev_gamedata;
 
-const byte FOOD_COLORS[] = { VGA_COLOR(GREEN, DARK_GRAY), VGA_COLOR(RED, DARK_GRAY), VGA_COLOR(YELLOW, DARK_GRAY) };
+const byte FOOD_COLORS[] = { VGA_COLOR(GREEN, BLACK), VGA_COLOR(RED, BLACK), VGA_COLOR(YELLOW, BLACK) };
 const byte FOOD_COLORS_COUNT = sizeof(FOOD_COLORS) / sizeof(FOOD_COLORS[0]);
 
 void print_ui_stat(byte x, byte y, const char* label, word value, word prev_value, byte color, byte is_first_frame) {
@@ -80,7 +80,8 @@ void print_ui_time_stat(byte x, byte y, const char* label, dword value, byte col
     dword seconds = value / 1000;
     dword milis = value % 1000 / 100;
 
-    int value_x = UI_AREA_X + UI_AREA_WIDTH - count_digits(value, 10);
+    int w = count_digits(seconds, 10) + 3;
+    int value_x = UI_AREA_X + UI_AREA_WIDTH - w;
 
     printint(value_x, y, seconds, color);
     value_x += count_digits(seconds, 10);
@@ -114,14 +115,14 @@ void addfood() {
 }
 
 void redraw_ui_if_needed() {
-    const byte BORDER_COLOR = VGA_COLOR(WHITE, DARK_GRAY);
-    const byte UI_TEXT_COLOR = VGA_COLOR(WHITE, DARK_GRAY);
+    const byte BORDER_COLOR = VGA_COLOR(WHITE, BLACK);
+    const byte UI_TEXT_COLOR = VGA_COLOR(WHITE, BLACK);
 
     const byte BORDER_CHAR = 0xDB;
 
     static byte is_first_frame = 1;
     if (is_first_frame) {
-        fillscreen(' ', VGA_COLOR(0, DARK_GRAY));
+        fillscreen(' ', VGA_COLOR(0, BLACK));
 
         fillcol(BOARD_X-1, BORDER_CHAR, BORDER_COLOR);
         fillcol(UI_AREA_X-1, BORDER_CHAR, BORDER_COLOR);
@@ -172,8 +173,14 @@ void handleinput() {
     }
 }
 
+// TODO
+void gameover() {
+    printstr(0, 0, "Game over", VGA_COLOR(WHITE, BLACK));
+    *(volatile byte*)0 = 0;                  // 🥀🥀🥀
+}
+
 void update() {
-    const byte SNAKE_COLOR = VGA_COLOR(WHITE, DARK_GRAY);
+    const byte SNAKE_COLOR = VGA_COLOR(WHITE, BLACK);
     const byte SNAKE_CHAR = '#';
 
     handleinput();
@@ -194,7 +201,20 @@ void update() {
     case RIGHT: snake.body[0].x += 1; break;
     }
 
-    if (snake.body[0].x == food.x && snake.body[0].y == food.y) {
+    snake_element_t head = snake.body[0];
+    if (head.x < BOARD_X || head.x > BOARD_X + BOARD_WIDTH
+     || head.y < BOARD_Y || head.y > BOARD_Y + BOARD_HEIGHT)
+    {
+        gameover();
+    }
+
+    for (word i = 1; i < snake.length; ++i) {
+        if (head.x == snake.body[i].x && head.y == snake.body[i].y) {
+            gameover();
+        }
+    } 
+
+    if (head.x == food.x && head.y == food.y) {
         snake.body[snake.length] = old_tail;
         snake.length++;
         gamedata.score++;
