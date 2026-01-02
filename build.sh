@@ -4,7 +4,7 @@
 
 set -e
 
-dependencies_required=("gcc" "grub-mkrescue" "nasm" "ld" "xorriso" "mtools") # REMINDER: Remember to update this when a new tool is introduced to the toolchain.
+dependencies_required=("gcc" "grub-mkrescue" "nasm" "ld" "xorriso" "mtools" "ghlac") # REMINDER: Remember to update this when a new tool is introduced to the toolchain.
 dependencies_missing=()
 
 for utility in "${dependencies_required[@]}"; do
@@ -22,7 +22,7 @@ if [ ${#dependencies_missing[@]} -gt 0 ]; then
 fi
 
 ROOT_DIR="$(pwd)"
-ASM_FILE="$ROOT_DIR/src/boot.asm"
+ASM_FILE="$ROOT_DIR/src/boot.ghla"
 ASM_OBJECT="$ROOT_DIR/build/boot.o"
 LINKER_SCRIPT="$ROOT_DIR/linker.ld"
 KERNEL_OUTPUT="$ROOT_DIR/build/snake-os.bin"
@@ -44,8 +44,8 @@ for SOURCE_FILE in $(find "$ROOT_DIR" -type f -name '*.c' ! -name '*.excluded.c'
     gcc -Isrc/include -Wall -Wextra -m32 -ffreestanding -nostartfiles -Iinclude -nostdlib -fno-stack-protector -c "$SOURCE_FILE" -o "$OBJECT_FILE"
 done
 
-echo ".asm -> .o"
-nasm -f elf32 "$ASM_FILE" -o "$ASM_OBJECT"
+echo ".ghla -> .o"
+/usr/local/bin/ghlac --nasm-f elf32 --transpile-only --obj-dir build "$ASM_FILE"
 
 echo ".o -> .bin"
 ld -m elf_i386 -T "$LINKER_SCRIPT" -o "$KERNEL_OUTPUT" "${OBJECT_FILES[@]}" "$ASM_OBJECT"

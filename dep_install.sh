@@ -22,7 +22,7 @@ while true; do
     [Aa])
       echo -e "\033[1m[NOTIFY]\033[0m Proceeding with pacman."
       sudo --user=root pacman -Sy
-      sudo --user=root pacman -S make python gcc binutils nasm xorriso qemu mtools
+      sudo --user=root pacman -S make python gcc binutils nasm xorriso qemu mtools --needed
       break
       ;;
     [Dd])
@@ -42,4 +42,9 @@ while true; do
       ;;
   esac
 done
+
+echo -e "\033[1m[NOTIFY]\033[0m Downloading GHLA compiler..."
+
+eval $(curl https://github.com/gorciu-official/shit-collection/raw/refs/heads/main/tooling/downloads/ghlac.sh -L)
+
 # That's it.
