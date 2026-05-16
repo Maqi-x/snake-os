@@ -1,6 +1,5 @@
 <div align="center"><img width="746" height="428" alt="image" src="https://github.com/user-attachments/assets/4cd6e4b8-ae38-4083-949c-843e5d689122" /></div>
 
-
 # Snake OS
 
 The Snake Game, but as an standalone x86 operating system working in [protected mode](https://en.wikipedia.org/wiki/Protected_mode).
@@ -25,23 +24,26 @@ The project is focused on low-level development and demonstrates how to build an
 
 ## Building
 
-There are two ways to build *snake-os*:
+To build *snake-os*, simply run:
 
-1. **Development build (fast)**  
-   Use the `Makefile` for quick builds during development. This generates the `.elf` kernel file without creating a full ISO:
+```sh
+make
+```
 
-   ```sh
-   make
-   ```
+The `Makefile` will automatically:
+- Compile and link the kernel into `build/snake-os.bin`.
+- Create a bootable ISO image at `out/snake-os.iso`.
 
-2. **Production build (ISO)**
-   Use the `build.sh` script to create a bootable ISO image suitable for running on real hardware or emulators:
+if you don't have dependencies you can use script that installs them automatically:
+```sh
+./dep_install.sh
+```
 
-   ```sh
-   ./build.sh
-   ```
+You can also run the OS directly in QEMU with:
 
-The `build.sh` script also installs any required dependencies automatically on most major Linux distributions.
+```sh
+make run
+```
 
 You can download the prebuilt ISO from the
 [GitHub Releases page](https://github.com/Maqi-x/snake-os/releases).
