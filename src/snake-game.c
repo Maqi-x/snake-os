@@ -79,8 +79,8 @@ void print_ui_time_stat(byte x, byte y, const char* label, dword value, byte col
         return;
     }
 
-    dword seconds = value / 1000;
-    dword milis = value % 1000 / 100;
+    dword seconds = value / SECOND;
+    dword milis = value % SECOND / 100;
 
     int w = count_digits(seconds, 10) + 3;
     int value_x = UI_AREA_X + UI_AREA_WIDTH - w;
@@ -261,7 +261,25 @@ void update() {
 
 delay:
     handleinput();
-    for (int i = 0; i < 50; ++i) {
+
+    dword playtime = uptime_ms() - gamedata.start_time;
+    static const dword multiplier_start = 10 * SECOND;
+    static const dword multiplier_step = 5 * SECOND;
+    static const dword min_multiplier = 25;
+    static const dword base_multiplier = 50;
+
+    dword multiplier = base_multiplier;
+    if (playtime > multiplier_start) {
+        dword time_after_start = playtime - multiplier_start;
+        dword steps = time_after_start / multiplier_step;
+        if (steps <= base_multiplier-min_multiplier) {
+            multiplier -= steps;
+        } else {
+            multiplier = min_multiplier;
+        }
+    }
+
+    for (int i = 0; i < multiplier; ++i) {
         handleinput();
         redraw_ui_if_needed(gamedata.is_new_game);
         gamedata.is_new_game = 0;
